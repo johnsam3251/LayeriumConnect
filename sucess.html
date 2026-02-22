@@ -1,26 +1,253 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wallet Connected</title>
+    <link
+      href="https://uploads-ssl.webflow.com/64967c521624e29a27ba6f27/6496ab6ee2e084bbd973caef_Asset%206%20(1).png"
+      rel="shortcut icon"
+      type="image/x-icon"
+    />
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Wallet Connected</title>
-  <link rel="stylesheet" href="assets/css/sucess.css" />
-   <link href="https://uploads-ssl.webflow.com/64967c521624e29a27ba6f27/6496ab6ee2e084bbd973caef_Asset%206%20(1).png"
-        rel="shortcut icon" type="image/x-icon" />
-    <link href="https://uploads-ssl.webflow.com/64967c521624e29a27ba6f27/64967c531624e29a27ba6f84_Webclip.png"
-        rel="apple-touch-icon" />
-</head>
+    <link
+      href="https://uploads-ssl.webflow.com/64967c521624e29a27ba6f27/64967c531624e29a27ba6f84_Webclip.png"
+      rel="apple-touch-icon"
+    />
 
-<body class="centered">
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family:
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto;
+      }
 
-    <div class="card">
-        <h1>Wallet connected successfully.</h1>
-        <p class="soft">
-            Claimed Reward to be received in less than 24 hours.
-        </p>
+      body {
+        min-height: 100vh;
+        background: #000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        color: #fff;
+      }
+
+      /* ---------- PARTICLE CANVAS ---------- */
+      canvas {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+      }
+
+      /* ---------- GLOW PANELS ---------- */
+      .bg {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+      }
+
+      .panel {
+        position: absolute;
+        width: 60vw;
+        height: 22vw;
+        background: linear-gradient(120deg, #2b6cff, #081a35);
+        filter: blur(50px);
+        opacity: 0.55;
+        border-radius: 30px;
+        transform: skewY(-12deg) rotate(-10deg);
+        animation: float 12s ease-in-out infinite;
+      }
+
+      .p1 {
+        top: 8%;
+        left: 15%;
+      }
+      .p2 {
+        top: 40%;
+        left: 30%;
+        animation-delay: 2s;
+      }
+      .p3 {
+        top: 68%;
+        left: 55%;
+        animation-delay: 4s;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0) skewY(-12deg) rotate(-10deg);
+        }
+        50% {
+          transform: translateY(-40px) skewY(-12deg) rotate(-10deg);
+        }
+      }
+
+      /* ---------- CARD ---------- */
+      .card {
+        position: relative;
+        z-index: 2;
+        width: min(92%, 520px);
+        padding: clamp(2rem, 5vw, 3rem);
+        border-radius: 26px;
+        text-align: center;
+
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(25px);
+
+        box-shadow:
+          0 0 60px rgba(0, 140, 255, 0.25),
+          inset 0 0 40px rgba(255, 255, 255, 0.05);
+
+        transition: transform 0.2s ease;
+        transform-style: preserve-3d;
+      }
+
+      /* reflection streak */
+      .card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        background: linear-gradient(
+          120deg,
+          transparent 20%,
+          rgba(255, 255, 255, 0.4),
+          transparent 80%
+        );
+        opacity: 0.25;
+        transform: translateX(-150%);
+        animation: shine 5s infinite;
+      }
+
+      @keyframes shine {
+        to {
+          transform: translateX(150%);
+        }
+      }
+
+      /* mouse glow */
+      .glow {
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(
+          circle,
+          rgba(0, 140, 255, 0.35),
+          transparent 70%
+        );
+        pointer-events: none;
+        z-index: 1;
+        transform: translate(-50%, -50%);
+      }
+
+      /* text */
+      h1 {
+        font-size: clamp(1.6rem, 3vw, 2.2rem);
+        margin-bottom: 1rem;
+      }
+
+      .soft {
+        opacity: 0.75;
+        font-size: clamp(0.9rem, 2vw, 1.05rem);
+      }
+
+      /* mobile tuning */
+      @media (max-width: 600px) {
+        .panel {
+          width: 100vw;
+          height: 45vw;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="particles"></canvas>
+
+    <div class="bg">
+      <div class="panel p1"></div>
+      <div class="panel p2"></div>
+      <div class="panel p3"></div>
     </div>
 
-</body>
+    <div class="glow" id="glow"></div>
 
+    <div class="card" id="card">
+      <h1>Wallet connected successfully.</h1>
+      <p class="soft">Claimed Reward to be received in less than 24 hours.</p>
+    </div>
+
+    <script>
+      /* ---------- MOUSE GLOW ---------- */
+      const glow = document.getElementById("glow");
+      document.addEventListener("mousemove", (e) => {
+        glow.style.left = e.clientX + "px";
+        glow.style.top = e.clientY + "px";
+      });
+
+      /* ---------- 3D PARALLAX ---------- */
+      const card = document.getElementById("card");
+      document.addEventListener("mousemove", (e) => {
+        const x = (window.innerWidth / 2 - e.clientX) / 25;
+        const y = (window.innerHeight / 2 - e.clientY) / 25;
+        card.style.transform = `rotateY(${x}deg) rotateX(${-y}deg)`;
+      });
+      document.addEventListener("mouseleave", () => {
+        card.style.transform = "rotateY(0) rotateX(0)";
+      });
+
+      /* ---------- PARTICLES ---------- */
+      const canvas = document.getElementById("particles");
+      const ctx = canvas.getContext("2d");
+
+      function resize() {
+        canvas.width = innerWidth;
+        canvas.height = innerHeight;
+      }
+      resize();
+      addEventListener("resize", resize);
+
+      let particles = [];
+      for (let i = 0; i < 70; i++) {
+        particles.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          r: Math.random() * 1.8 + 0.4,
+          d: Math.random() * 0.5,
+        });
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "rgba(120,180,255,.6)";
+        particles.forEach((p) => {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fill();
+        });
+        update();
+      }
+
+      function update() {
+        particles.forEach((p) => {
+          p.y -= p.d;
+          if (p.y < 0) {
+            p.y = canvas.height;
+            p.x = Math.random() * canvas.width;
+          }
+        });
+      }
+
+      (function animate() {
+        draw();
+        requestAnimationFrame(animate);
+      })();
+    </script>
+  </body>
 </html>
