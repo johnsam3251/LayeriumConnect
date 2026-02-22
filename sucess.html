@@ -2,7 +2,13 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- MOBILE SAFE VIEWPORT -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+
     <title>Wallet Connected</title>
     <link
       href="https://uploads-ssl.webflow.com/64967c521624e29a27ba6f27/6496ab6ee2e084bbd973caef_Asset%206%20(1).png"
@@ -16,6 +22,7 @@
     />
 
     <style>
+      /* RESET */
       * {
         margin: 0;
         padding: 0;
@@ -27,27 +34,38 @@
           Roboto;
       }
 
+      html,
       body {
-        min-height: 100vh;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        touch-action: none;
+      }
+
+      /* BODY */
+      body {
+        height: 100dvh;
+        width: 100vw;
         background: #000;
         display: flex;
         align-items: center;
         justify-content: center;
-        overflow: hidden;
         color: #fff;
+        position: fixed;
       }
 
-      /* ---------- PARTICLE CANVAS ---------- */
+      /* PARTICLES */
       canvas {
-        position: absolute;
+        position: fixed;
         inset: 0;
         z-index: 0;
       }
 
-      /* ---------- GLOW PANELS ---------- */
+      /* BACKGROUND PANELS */
       .bg {
-        position: absolute;
+        position: fixed;
         inset: 0;
+        overflow: hidden;
         z-index: 0;
       }
 
@@ -88,7 +106,7 @@
         }
       }
 
-      /* ---------- CARD ---------- */
+      /* CARD */
       .card {
         position: relative;
         z-index: 2;
@@ -96,20 +114,17 @@
         padding: clamp(2rem, 5vw, 3rem);
         border-radius: 26px;
         text-align: center;
-
         background: rgba(255, 255, 255, 0.06);
         border: 1px solid rgba(255, 255, 255, 0.15);
         backdrop-filter: blur(25px);
-
         box-shadow:
           0 0 60px rgba(0, 140, 255, 0.25),
           inset 0 0 40px rgba(255, 255, 255, 0.05);
-
-        transition: transform 0.2s ease;
+        transition: transform 0.15s linear;
         transform-style: preserve-3d;
       }
 
-      /* reflection streak */
+      /* LIGHT STREAK */
       .card::before {
         content: "";
         position: absolute;
@@ -123,7 +138,7 @@
         );
         opacity: 0.25;
         transform: translateX(-150%);
-        animation: shine 5s infinite;
+        animation: shine 5s linear infinite;
       }
 
       @keyframes shine {
@@ -132,9 +147,9 @@
         }
       }
 
-      /* mouse glow */
+      /* MOUSE GLOW */
       .glow {
-        position: absolute;
+        position: fixed;
         width: 300px;
         height: 300px;
         background: radial-gradient(
@@ -147,7 +162,7 @@
         transform: translate(-50%, -50%);
       }
 
-      /* text */
+      /* TEXT */
       h1 {
         font-size: clamp(1.6rem, 3vw, 2.2rem);
         margin-bottom: 1rem;
@@ -158,7 +173,7 @@
         font-size: clamp(0.9rem, 2vw, 1.05rem);
       }
 
-      /* mobile tuning */
+      /* MOBILE TUNE */
       @media (max-width: 600px) {
         .panel {
           width: 100vw;
@@ -167,6 +182,7 @@
       }
     </style>
   </head>
+
   <body>
     <canvas id="particles"></canvas>
 
@@ -193,11 +209,13 @@
 
       /* ---------- 3D PARALLAX ---------- */
       const card = document.getElementById("card");
+
       document.addEventListener("mousemove", (e) => {
-        const x = (window.innerWidth / 2 - e.clientX) / 25;
-        const y = (window.innerHeight / 2 - e.clientY) / 25;
+        const x = (window.innerWidth / 2 - e.clientX) / 30;
+        const y = (window.innerHeight / 2 - e.clientY) / 30;
         card.style.transform = `rotateY(${x}deg) rotateX(${-y}deg)`;
       });
+
       document.addEventListener("mouseleave", () => {
         card.style.transform = "rotateY(0) rotateX(0)";
       });
@@ -207,11 +225,11 @@
       const ctx = canvas.getContext("2d");
 
       function resize() {
-        canvas.width = innerWidth;
-        canvas.height = innerHeight;
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
       }
       resize();
-      addEventListener("resize", resize);
+      window.addEventListener("resize", resize);
 
       let particles = [];
       for (let i = 0; i < 70; i++) {
@@ -219,7 +237,7 @@
           x: Math.random() * canvas.width,
           y: Math.random() * canvas.height,
           r: Math.random() * 1.8 + 0.4,
-          d: Math.random() * 0.5,
+          d: Math.random() * 0.6 + 0.1,
         });
       }
 
