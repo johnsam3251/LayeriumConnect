@@ -2,13 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-
-    <!-- MOBILE SAFE VIEWPORT -->
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover"
     />
-
     <title>Wallet Connected</title>
     <link
       href="https://uploads-ssl.webflow.com/64967c521624e29a27ba6f27/6496ab6ee2e084bbd973caef_Asset%206%20(1).png"
@@ -164,7 +161,8 @@
 
       /* TEXT */
       h1 {
-        font-size: clamp(1.6rem, 3vw, 2.2rem);
+        white-space: nowrap;
+        font-size: 40px; /* auto-fit script controls size */
         margin-bottom: 1rem;
       }
 
@@ -195,7 +193,7 @@
     <div class="glow" id="glow"></div>
 
     <div class="card" id="card">
-      <h1>Wallet connected successfully.</h1>
+      <h1 id="title">Wallet Connected Successfully.</h1>
       <p class="soft">Claimed Reward to be received in less than 24 hours.</p>
     </div>
 
@@ -266,6 +264,22 @@
         draw();
         requestAnimationFrame(animate);
       })();
+
+      /* ---------- AUTO TEXT FIT ---------- */
+      const title = document.getElementById("title");
+
+      function fitText() {
+        let size = 40;
+        title.style.fontSize = size + "px";
+
+        while (title.scrollWidth > title.clientWidth && size > 10) {
+          size--;
+          title.style.fontSize = size + "px";
+        }
+      }
+
+      fitText();
+      window.addEventListener("resize", fitText);
     </script>
   </body>
 </html>
